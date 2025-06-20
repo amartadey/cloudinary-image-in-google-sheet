@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloudinary to Google Sheets Converter</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/iconify/3.1.1/iconify.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .main-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            margin: 2rem auto;
+            max-width: 800px;
+        }
+        
+        .header-section {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            border-radius: 20px 20px 0 0;
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .header-section h1 {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .input-section {
+            padding: 2rem;
+        }
+        
+        .form-control, .form-select {
+            border-radius: 12px;
+            border: 2px solid #e9ecef;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: #4facfe;
+            box-shadow: 0 0 0 0.2rem rgba(79, 172, 254, 0.25);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 12px;
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .output-section {
+            background: #f8f9fa;
+            border-radius: 0 0 20px 20px;
+            padding: 2rem;
+            border-top: 1px solid #e9ecef;
+        }
+        
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            border-radius: 12px;
+            padding: 1rem;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9rem;
+            word-break: break-all;
+            position: relative;
+            margin-bottom: 1rem;
+        }
+        
+        .copy-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: rgba(79, 172, 254, 0.8);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            padding: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .copy-btn:hover {
+            background: #4facfe;
+            transform: scale(1.1);
+        }
+        
+        .preview-section {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 2px dashed #dee2e6;
+            text-align: center;
+            margin-top: 1rem;
+        }
+        
+        .preview-image {
+            max-width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .alert-success {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            border: none;
+            color: white;
+            border-radius: 12px;
+        }
+        
+        .alert-danger {
+            background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+            border: none;
+            color: white;
+            border-radius: 12px;
+        }
+        
+        .feature-badge {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .option-group {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid #e9ecef;
+        }
+        
+        .option-title {
+            font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="main-container">
+            <div class="header-section">
+                <iconify-icon icon="mdi:image-filter-hdr" width="48" height="48" class="mb-3"></iconify-icon>
+                <h1>Cloudinary to Google Sheets</h1>
+                <p class="mb-0">Convert Cloudinary URLs to embeddable Google Sheets formulas</p>
+            </div>
+            
+            <div class="input-section">
+                <div class="mb-4">
+                    <label for="cloudinaryUrl" class="form-label fw-bold">
+                        <iconify-icon icon="mdi:link" class="me-2"></iconify-icon>
+                        Cloudinary Image URL
+                    </label>
+                    <input type="url" class="form-control" id="cloudinaryUrl" 
+                           placeholder="https://res.cloudinary.com/your-cloud/image/upload/..." 
+                           required>
+                    <div class="form-text">Paste your Cloudinary image URL here</div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="option-group">
+                            <div class="option-title">
+                                <iconify-icon icon="mdi:resize" width="20"></iconify-icon>
+                                Image Size
+                            </div>
+                            <div class="row">
+                                <div class="col-6">
+                                    <label for="imageWidth" class="form-label">Width</label>
+                                    <input type="number" class="form-control" id="imageWidth" value="150" min="50" max="1000">
+                                </div>
+                                <div class="col-6">
+                                    <label for="imageHeight" class="form-label">Height</label>
+                                    <input type="number" class="form-control" id="imageHeight" value="150" min="50" max="1000">
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <label for="cropMode" class="form-label">Crop Mode</label>
+                                <select class="form-select" id="cropMode">
+                                    <option value="fill">Fill (crop to exact size)</option>
+                                    <option value="fit">Fit (scale to fit)</option>
+                                    <option value="scale">Scale (resize exactly)</option>
+                                    <option value="crop">Crop (center crop)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="option-group">
+                            <div class="option-title">
+                                <iconify-icon icon="mdi:tune" width="20"></iconify-icon>
+                                Quality & Effects
+                            </div>
+                            <div class="mb-3">
+                                <label for="imageQuality" class="form-label">Quality (%)</label>
+                                <select class="form-select" id="imageQuality">
+                                    <option value="">Auto (recommended)</option>
+                                    <option value="q_100">100% (best quality)</option>
+                                    <option value="q_90">90% (high quality)</option>
+                                    <option value="q_80">80% (good quality)</option>
+                                    <option value="q_70">70% (medium quality)</option>
+                                    <option value="q_60">60% (compressed)</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="imageFormat" class="form-label">Format</label>
+                                <select class="form-select" id="imageFormat">
+                                    <option value="">Auto</option>
+                                    <option value="f_jpg">JPG</option>
+                                    <option value="f_png">PNG</option>
+                                    <option value="f_webp">WebP</option>
+                                    <option value="f_auto">Auto-optimized</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-4">
+                    <button type="button" class="btn btn-primary btn-lg" id="convertBtn">
+                        <iconify-icon icon="mdi:magic-staff" class="me-2"></iconify-icon>
+                        Convert to Google Sheets Formula
+                    </button>
+                </div>
+            </div>
+            
+            <div class="output-section" id="outputSection" style="display: none;">
+                <h4 class="mb-4">
+                    <iconify-icon icon="mdi:code-tags" class="me-2"></iconify-icon>
+                    Generated Code & Links
+                </h4>
+                
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <strong>Google Sheets Formula:</strong>
+                        <span class="feature-badge">Ready to paste</span>
+                    </div>
+                    <div class="code-block">
+                        <button class="copy-btn" data-copy="formula" title="Copy formula">
+                            <iconify-icon icon="mdi:content-copy" width="16"></iconify-icon>
+                        </button>
+                        <div id="formulaOutput"></div>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <strong>Optimized Image URL:</strong>
+                        <span class="feature-badge">Direct link</span>
+                    </div>
+                    <div class="code-block">
+                        <button class="copy-btn" data-copy="imageUrl" title="Copy image URL">
+                            <iconify-icon icon="mdi:content-copy" width="16"></iconify-icon>
+                        </button>
+                        <div id="imageUrlOutput"></div>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <strong>Original URL:</strong>
+                        <span class="feature-badge">Source</span>
+                    </div>
+                    <div class="code-block">
+                        <button class="copy-btn" data-copy="originalUrl" title="Copy original URL">
+                            <iconify-icon icon="mdi:content-copy" width="16"></iconify-icon>
+                        </button>
+                        <div id="originalUrlOutput"></div>
+                    </div>
+                </div>
+                
+                <div class="preview-section">
+                    <h5 class="mb-3">
+                        <iconify-icon icon="mdi:eye" class="me-2"></iconify-icon>
+                        Preview
+                    </h5>
+                    <div id="imagePreview">
+                        <div class="text-muted">Image preview will appear here</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="alertContainer"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/iconify/3.1.1/iconify.min.js"></script>
+    
+    <script>
+        class CloudinaryConverter {
+            constructor() {
+                this.initializeEventListeners();
+            }
+            
+            initializeEventListeners() {
+                document.getElementById('convertBtn').addEventListener('click', () => this.convertUrl());
+                document.querySelectorAll('.copy-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => this.copyToClipboard(e.target.closest('.copy-btn').dataset.copy));
+                });
+                
+                // Real-time preview on input changes
+                ['imageWidth', 'imageHeight', 'cropMode', 'imageQuality', 'imageFormat'].forEach(id => {
+                    document.getElementById(id).addEventListener('change', () => {
+                        if (document.getElementById('cloudinaryUrl').value) {
+                            this.convertUrl();
+                        }
+                    });
+                });
+                
+                // Enter key support
+                document.getElementById('cloudinaryUrl').addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        this.convertUrl();
+                    }
+                });
+            }
+            
+            validateCloudinaryUrl(url) {
+                const cloudinaryPattern = /^https:\/\/res\.cloudinary\.com\/[^\/]+\/image\/upload\//;
+                return cloudinaryPattern.test(url);
+            }
+            
+            extractCloudinaryParts(url) {
+                const match = url.match(/^(https:\/\/res\.cloudinary\.com\/[^\/]+\/image\/upload\/)(.*)$/);
+                if (!match) return null;
+                
+                return {
+                    baseUrl: match[1],
+                    imagePath: match[2]
+                };
+            }
+            
+            buildTransformationString() {
+                const width = document.getElementById('imageWidth').value;
+                const height = document.getElementById('imageHeight').value;
+                const cropMode = document.getElementById('cropMode').value;
+                const quality = document.getElementById('imageQuality').value;
+                const format = document.getElementById('imageFormat').value;
+                
+                let transformations = [];
+                
+                // Size and crop
+                if (width && height) {
+                    transformations.push(`w_${width}`, `h_${height}`, `c_${cropMode}`);
+                }
+                
+                // Quality
+                if (quality) {
+                    transformations.push(quality);
+                }
+                
+                // Format
+                if (format) {
+                    transformations.push(format);
+                }
+                
+                return transformations.join(',');
+            }
+            
+            convertUrl() {
+                const originalUrl = document.getElementById('cloudinaryUrl').value.trim();
+                
+                if (!originalUrl) {
+                    this.showAlert('Please enter a Cloudinary URL', 'danger');
+                    return;
+                }
+                
+                if (!this.validateCloudinaryUrl(originalUrl)) {
+                    this.showAlert('Please enter a valid Cloudinary URL (must start with https://res.cloudinary.com/)', 'danger');
+                    return;
+                }
+                
+                const parts = this.extractCloudinaryParts(originalUrl);
+                if (!parts) {
+                    this.showAlert('Could not parse the Cloudinary URL', 'danger');
+                    return;
+                }
+                
+                const transformationString = this.buildTransformationString();
+                const optimizedImageUrl = transformationString 
+                    ? `${parts.baseUrl}${transformationString}/${parts.imagePath}`
+                    : originalUrl;
+                
+                const googleSheetsFormula = `=HYPERLINK("${originalUrl}", IMAGE("${optimizedImageUrl}", 1))`;
+                
+                this.displayResults(googleSheetsFormula, optimizedImageUrl, originalUrl);
+                this.showAlert('Conversion completed successfully!', 'success');
+            }
+            
+            displayResults(formula, imageUrl, originalUrl) {
+                document.getElementById('formulaOutput').textContent = formula;
+                document.getElementById('imageUrlOutput').textContent = imageUrl;
+                document.getElementById('originalUrlOutput').textContent = originalUrl;
+                
+                // Update preview
+                const previewContainer = document.getElementById('imagePreview');
+                previewContainer.innerHTML = `
+                    <img src="${imageUrl}" alt="Preview" class="preview-image" 
+                         onerror="this.parentElement.innerHTML='<div class=\\'text-danger\\'>Failed to load image preview</div>'"
+                         onload="this.classList.add('fade-in')">
+                `;
+                
+                // Show output section with animation
+                const outputSection = document.getElementById('outputSection');
+                outputSection.style.display = 'block';
+                outputSection.classList.add('fade-in');
+                
+                // Scroll to results
+                outputSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+            
+            async copyToClipboard(type) {
+                let textToCopy = '';
+                
+                switch(type) {
+                    case 'formula':
+                        textToCopy = document.getElementById('formulaOutput').textContent;
+                        break;
+                    case 'imageUrl':
+                        textToCopy = document.getElementById('imageUrlOutput').textContent;
+                        break;
+                    case 'originalUrl':
+                        textToCopy = document.getElementById('originalUrlOutput').textContent;
+                        break;
+                }
+                
+                try {
+                    await navigator.clipboard.writeText(textToCopy);
+                    this.showAlert(`${type.charAt(0).toUpperCase() + type.slice(1).replace(/([A-Z])/g, ' $1')} copied to clipboard!`, 'success');
+                } catch (err) {
+                    // Fallback for older browsers
+                    this.fallbackCopyToClipboard(textToCopy);
+                    this.showAlert(`${type.charAt(0).toUpperCase() + type.slice(1).replace(/([A-Z])/g, ' $1')} copied to clipboard!`, 'success');
+                }
+            }
+            
+            fallbackCopyToClipboard(text) {
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                textArea.style.position = 'fixed';
+                textArea.style.left = '-999999px';
+                textArea.style.top = '-999999px';
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                document.execCommand('copy');
+                textArea.remove();
+            }
+            
+            showAlert(message, type) {
+                const alertContainer = document.getElementById('alertContainer');
+                const alertId = `alert-${Date.now()}`;
+                
+                const alertHtml = `
+                    <div class="alert alert-${type} alert-dismissible fade show position-fixed" 
+                         style="top: 20px; right: 20px; z-index: 1050; max-width: 400px;" 
+                         id="${alertId}">
+                        <iconify-icon icon="mdi:${type === 'success' ? 'check-circle' : 'alert-circle'}" 
+                                      class="me-2"></iconify-icon>
+                        ${message}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                `;
+                
+                alertContainer.insertAdjacentHTML('beforeend', alertHtml);
+                
+                // Auto-remove after 5 seconds
+                setTimeout(() => {
+                    const alert = document.getElementById(alertId);
+                    if (alert) {
+                        const bootstrapAlert = new bootstrap.Alert(alert);
+                        bootstrapAlert.close();
+                    }
+                }, 5000);
+            }
+        }
+        
+        // Initialize the converter when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            new CloudinaryConverter();
+        });
+    </script>
+</body>
+</html>
