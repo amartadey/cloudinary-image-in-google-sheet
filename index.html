@@ -237,7 +237,7 @@
                 <div class="compact-section">
                     <div class="output-label">
                         <i class="bi bi-code-square"></i>
-                        Google Sheets Formula
+                        Google Sheets Formula (Image + Link)
                         <span class="badge bg-primary">Ready to paste</span>
                     </div>
                     <div class="code-block">
@@ -245,6 +245,20 @@
                             <i class="bi bi-clipboard"></i> Copy
                         </button>
                         <div id="formulaOutput"></div>
+                    </div>
+                </div>
+                
+                <div class="compact-section">
+                    <div class="output-label">
+                        <i class="bi bi-camera-fill"></i>
+                        View Full Image Button
+                        <span class="badge bg-info">Button style</span>
+                    </div>
+                    <div class="code-block">
+                        <button class="copy-btn" data-copy="buttonFormula">
+                            <i class="bi bi-clipboard"></i> Copy
+                        </button>
+                        <div id="buttonFormulaOutput"></div>
                     </div>
                 </div>
                 
@@ -389,12 +403,14 @@
                     : originalUrl;
                 
                 const googleSheetsFormula = `=HYPERLINK("${originalUrl}", IMAGE("${optimizedImageUrl}", 1))`;
+                const buttonFormula = `=HYPERLINK("${originalUrl}", "📸 VIEW FULL IMAGE")`;
                 
-                this.displayResults(googleSheetsFormula, optimizedImageUrl, originalUrl);
+                this.displayResults(googleSheetsFormula, buttonFormula, optimizedImageUrl, originalUrl);
             }
             
-            displayResults(formula, imageUrl, originalUrl) {
+            displayResults(formula, buttonFormula, imageUrl, originalUrl) {
                 document.getElementById('formulaOutput').textContent = formula;
+                document.getElementById('buttonFormulaOutput').textContent = buttonFormula;
                 document.getElementById('imageUrlOutput').textContent = imageUrl;
                 document.getElementById('originalUrlOutput').textContent = originalUrl;
                 
@@ -420,6 +436,10 @@
                     case 'formula':
                         textToCopy = document.getElementById('formulaOutput').textContent;
                         label = 'Formula';
+                        break;
+                    case 'buttonFormula':
+                        textToCopy = document.getElementById('buttonFormulaOutput').textContent;
+                        label = 'Button Formula';
                         break;
                     case 'imageUrl':
                         textToCopy = document.getElementById('imageUrlOutput').textContent;
